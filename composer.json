@@ -1,0 +1,26 @@
+{
+    "name": "thecodingmachine/service-provider-bridge-bundle",
+    "type": "symfony-bundle",
+    "description": "This Symfony Bundle allows Symfony applications to use service providers as defined in container-interop/service-provider",
+    "keywords": ["PSR-11", "Symfony", "container-interop", "service-provider"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Négrier"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "symfony/dependency-injection": "~2.3",
+        "container-interop/service-provider": "dev-master",
+        "symfony/framework-bundle": "^2.7 | ^3.0"
+    },
+    "require-dev": {
+        "php": ">=5.6",
+        "phpunit/phpunit": "~5.0"
+    },
+    "autoload": {
+        "psr-4": { "TheCodingMachine\\Interop\\ServiceProviderBridgeBundle\\": "src/" }
+    }
+}
+
