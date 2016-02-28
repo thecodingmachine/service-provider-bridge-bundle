@@ -13,8 +13,9 @@ class TestServiceProviderOverride implements ServiceProvider
         ];
     }
 
-    public static function overrideServiceA(ContainerInterface $container, $serviceA)
+    public static function overrideServiceA(ContainerInterface $container, callable $previousCallback = null)
     {
+        $serviceA = $previousCallback();
         $serviceA->newProperty = 'foo';
         return $serviceA;
     }

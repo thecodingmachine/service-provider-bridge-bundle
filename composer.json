@@ -12,8 +12,9 @@
     "require": {
         "php": ">=5.5.0",
         "symfony/dependency-injection": "^2.3 | ^3.0",
-        "container-interop/service-provider": "~0.1.0",
-        "symfony/framework-bundle": "^2.7 | ^3.0"
+        "container-interop/service-provider": "~0.2.0",
+        "symfony/framework-bundle": "^2.7 | ^3.0",
+        "puli/symfony-bundle": "^1.0"
     },
     "require-dev": {
         "php": ">=5.6",
