@@ -47,7 +47,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
 
             foreach ($bindings as $binding) {
                 if ($binding instanceof ClassBinding) {
-                    $serviceProviders[] = $binding;
+                    $serviceProviders[] = $binding->getClassName();
                 }
             }
         }
@@ -72,7 +72,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
 
     private function registerProvider($className, ContainerBuilder $container) {
         if (!is_string($className) || !class_exists($className)) {
-            throw new ServiceProviderBridgeException('Error in parameter "interop.service.providers": providers should be fully qualified class names.');
+            throw new ServiceProviderBridgeException('Error in parameter "interop.service.providers" or in Puli binding: providers should be fully qualified class names.');
         }
 
         $serviceFactories = call_user_func([$className, 'getServices']);
