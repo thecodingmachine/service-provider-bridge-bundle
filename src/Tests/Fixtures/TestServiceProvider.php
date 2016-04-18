@@ -9,16 +9,14 @@ class TestServiceProvider implements ServiceProvider
     public function getServices()
     {
         return [
-            'serviceA' => [ TestServiceProvider::class, 'createServiceA' ],
+            'serviceA' => function (ContainerInterface $container) {
+                $instance = new \stdClass();
+                $instance->serviceB = $container->get('serviceB');
+
+                return $instance;
+            },
             'serviceB' => [ TestServiceProvider::class, 'createServiceB' ]
         ];
-    }
-
-    public static function createServiceA(ContainerInterface $container)
-    {
-        $instance = new \stdClass();
-        $instance->serviceB = $container->get('serviceB');
-        return $instance;
     }
 
     public static function createServiceB(ContainerInterface $container)
