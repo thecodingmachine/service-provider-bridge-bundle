@@ -3,8 +3,8 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
 use Puli\Discovery\Api\Discovery;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use TheCodingMachine\ServiceProvider\Registry;
 
@@ -43,11 +43,11 @@ class InteropServiceProviderBridgeBundle extends Bundle
     }
 
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      * @return Registry
      * @throws InvalidArgumentException
      */
-    public function getRegistry(Container $container)
+    public function getRegistry(ContainerInterface $container)
     {
         $discovery = null;
         if ($this->usePuli) {
@@ -60,11 +60,11 @@ class InteropServiceProviderBridgeBundle extends Bundle
     }
 
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      * @return Discovery
      * @throws InvalidArgumentException
      */
-    protected function getPuliDiscovery(Container $container)
+    protected function getPuliDiscovery(ContainerInterface $container)
     {
         if (!$container->has('puli.discovery')) {
             throw new InvalidArgumentException('Could not find puli.discovery in container. Make sure you add the Puli bundle to your AppKernel.php file. Alternatively, you can disable Puli detection by passing false as the second argument to the InteropServiceProviderBridgeBundle.');
