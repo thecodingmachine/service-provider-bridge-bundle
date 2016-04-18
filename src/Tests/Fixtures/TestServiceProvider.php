@@ -14,14 +14,14 @@ class TestServiceProvider implements ServiceProvider
         ];
     }
 
-    public function createServiceA(ContainerInterface $container)
+    public static function createServiceA(ContainerInterface $container)
     {
         $instance = new \stdClass();
         $instance->serviceB = $container->get('serviceB');
         return $instance;
     }
 
-    public function createServiceB(ContainerInterface $container)
+    public static function createServiceB(ContainerInterface $container)
     {
         $instance = new \stdClass();
         // Test getting the database_host parameter.

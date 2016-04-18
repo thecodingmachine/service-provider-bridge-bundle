@@ -55,7 +55,7 @@ class InteropServiceProviderBridgeBundle extends Bundle
         }
 
         // In parallel, let's merge the registry:
-        $registry = new Registry($this->serviceProvidersLazyArray, $discovery);
+        $registry = new Registry($this->serviceProviders, $discovery);
         return $registry;
     }
 
