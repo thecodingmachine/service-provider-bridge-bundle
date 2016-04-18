@@ -6,22 +6,22 @@ use Interop\Container\ServiceProvider;
 
 class TestServiceProvider implements ServiceProvider
 {
-    public static function getServices()
+    public function getServices()
     {
         return [
-            'serviceA' => 'createServiceA',
-            'serviceB' => 'createServiceB'
+            'serviceA' => [ TestServiceProvider::class, 'createServiceA' ],
+            'serviceB' => [ TestServiceProvider::class, 'createServiceB' ]
         ];
     }
 
-    public static function createServiceA(ContainerInterface $container)
+    public function createServiceA(ContainerInterface $container)
     {
         $instance = new \stdClass();
         $instance->serviceB = $container->get('serviceB');
         return $instance;
     }
 
-    public static function createServiceB(ContainerInterface $container)
+    public function createServiceB(ContainerInterface $container)
     {
         $instance = new \stdClass();
         // Test getting the database_host parameter.

@@ -6,10 +6,10 @@ use Interop\Container\ServiceProvider;
 
 class TestServiceProviderOverride implements ServiceProvider
 {
-    public static function getServices()
+    public function getServices()
     {
         return [
-            'serviceA' => 'overrideServiceA'
+            'serviceA' => [ TestServiceProviderOverride::class, 'overrideServiceA' ]
         ];
     }
 

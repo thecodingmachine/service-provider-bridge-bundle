@@ -4,6 +4,7 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
 
+use Interop\Container\ServiceProvider;
 use Puli\Discovery\Binding\ClassBinding;
 use Puli\GeneratedPuliFactory;
 use Symfony\Component\DependencyInjection\Alias;
@@ -12,9 +13,37 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
+use TheCodingMachine\ServiceProvider\Registry;
 
 class ServiceProviderCompilationPass implements CompilerPassInterface
 {
+    private $registryId;
+
+    /**
+     * @var array
+     */
+    private $serviceProvidersLazyArray;
+
+    /**
+     * @var bool
+     */
+    private $usePuli;
+
+    private $bundle;
+
+    /**
+     * @param int $registryId
+     * @param array $serviceProvidersLazyArray
+     * @param bool $usePuli
+     */
+    public function __construct($registryId, array $serviceProvidersLazyArray, $usePuli, InteropServiceProviderBridgeBundle $bundle)
+    {
+        $this->registryId = $registryId;
+        $this->serviceProvidersLazyArray = $serviceProvidersLazyArray;
+        $this->usePuli = $usePuli;
+        $this->bundle = $bundle;
+    }
+
 
     /**
      * You can modify the container here before it is dumped to PHP code.
@@ -23,75 +52,51 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        // Now, let's store the registry in the container (an empty version of it... it will be dynamically added at runtime):
+        $this->registerRegistry($container);
 
-        if ($container->hasParameter('interop.service.enable_puli')) {
-            $enablePuli = $container->getParameter('interop.service.enable_puli');
-        } else {
-            $enablePuli = true;
-        }
+        $registry = $this->bundle->getRegistry($container);
 
-        $serviceProviders = [];
-
-        if ($enablePuli) {
-            try {
-                $puliFactory = $container->get('puli.factory');
-                /* @var $puliFactory GeneratedPuliFactory */
-            } catch (InvalidArgumentException $exception) {
-                throw new InvalidArgumentException('Could not find puli.factory in container. Make sure you add the Puli bundle to your AppKernel.php file. Alternatively, you can disable Puli detection using the interop.service.enable_puli = false parameter.', 0, $exception);
-            }
-
-            $discovery = $puliFactory->createDiscovery($puliFactory->createRepository());
-
-            $bindings = $discovery->findBindings('container-interop/service-provider');
-
-
-            foreach ($bindings as $binding) {
-                if ($binding instanceof ClassBinding) {
-                    $serviceProviders[] = $binding->getClassName();
-                }
-            }
-        }
-
-        if ($container->hasParameter('interop.service.providers')) {
-            $serviceProviders = array_merge($serviceProviders, array_values($container->getParameter('interop.service.providers')));
-        }
+        // Note: in the 'boot' method of a bundle, the container is available.
+        // We use that to push the lazy array in the container.
+        // The lazy array can be used by the registry that is also part of the container.
+        // The registry can itself be used by a factory that creates services!
 
         $this->registerAcclimatedContainer($container);
 
-        foreach ($serviceProviders as $serviceProvider) {
-            $this->registerProvider($serviceProvider, $container);
+        foreach ($registry as $serviceProviderKey => $serviceProvider) {
+            $this->registerProvider($serviceProviderKey, $serviceProvider, $container);
         }
+    }
+
+
+    private function registerRegistry(ContainerBuilder $container)
+    {
+        $definition = new Definition(Registry::class);
+        $definition->setSynthetic(true);
+
+        $container->setDefinition('service_provider_registry_'.$this->registryId, $definition);
     }
 
     private function registerAcclimatedContainer(ContainerBuilder $container) {
         $definition = new Definition('TheCodingMachine\\Interop\\ServiceProviderBridgeBundle\\SymfonyContainerAdapter');
         $definition->addArgument(new Reference("service_container"));
 
-        $container->addDefinitions([ 'interop_service_provider_acclimated_container' => $definition ]);
+        $container->setDefinition('interop_service_provider_acclimated_container', $definition);
     }
 
-    private function registerProvider($className, ContainerBuilder $container) {
-        if (!is_string($className) || !class_exists($className)) {
-            throw new ServiceProviderBridgeException('Error in parameter "interop.service.providers" or in Puli binding: providers should be fully qualified class names.');
-        }
+    private function registerProvider($serviceProviderKey, ServiceProvider $serviceProvider, ContainerBuilder $container) {
+        $serviceFactories = $serviceProvider->getServices();
 
-        $serviceFactories = call_user_func([$className, 'getServices']);
-
-        foreach ($serviceFactories as $serviceName => $methodName) {
-            $this->registerService($serviceName, $className, $methodName, $container);
+        foreach ($serviceFactories as $serviceName => $callable) {
+            $this->registerService($serviceName, $serviceProviderKey, $serviceProvider, $callable, $container);
         }
     }
 
-    private function registerService($serviceName, $className, $methodName, ContainerBuilder $container) {
-        $factoryDefinition = new Definition('Class'); // TODO: in PHP7, we can get the return type of the function!
-        $factoryDefinition->setFactory([
-            $className,
-            $methodName
-        ]);
-        $arguments = [new Reference('interop_service_provider_acclimated_container')];
+    private function registerService($serviceName, $serviceProviderKey, ServiceProvider $serviceProvider, $callable, ContainerBuilder $container) {
+        $factoryDefinition = $this->getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, $callable);
 
         if (!$container->has($serviceName)) {
-            $factoryDefinition->setArguments($arguments);
             $container->setDefinition($serviceName, $factoryDefinition);
         } else {
             // The new service will be created under the name 'xxx_decorated_y'
@@ -112,8 +117,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
                 $innerName
             ]);
 
-            $arguments[] = new Reference($callbackWrapperName);
-            $factoryDefinition->setArguments($arguments);
+            $factoryDefinition->addArgument(new Reference($callbackWrapperName));
 
             $container->setDefinition($serviceName, $factoryDefinition);
             $container->setDefinition($innerName, $innerDefinition);
@@ -130,5 +134,32 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
             $counter++;
         }
         return $serviceName.'_decorated_'.$counter;
+    }
+
+    private function getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, callable $callable)
+    {
+        /*if ($callable instanceof DefinitionInterface) {
+            // TODO: plug the definition-interop converter here!
+        }*/
+        $factoryDefinition = new Definition('Class'); // TODO: in PHP7, we can get the return type of the function!
+        $containerDefinition = new Reference('interop_service_provider_acclimated_container');
+
+        if (is_array($callable) && is_string($callable[0])) {
+            $factoryDefinition->setFactory([
+                $callable[0],
+                $callable[1]
+            ]);
+            $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
+        } elseif (is_string($callable) && strpos($callable, '::') !== false) {
+            $factoryDefinition->setFactory($callable);
+            $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
+        } else {
+            $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), 'createService' ]);
+            $factoryDefinition->addArgument($serviceProviderKey);
+            $factoryDefinition->addArgument($serviceName);
+            $factoryDefinition->addArgument($containerDefinition);
+        }
+
+        return $factoryDefinition;
     }
 }

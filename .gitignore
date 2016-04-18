@@ -1,2 +1,5 @@
 *~
 vendor/
+.puli/
+composer.lock
+puli.json
