@@ -16,8 +16,7 @@
         "symfony/framework-bundle": "^2.7 | ^3.0",
         "puli/cli": "^1.0",
         "puli/symfony-bundle": "^1.0",
-        "thecodingmachine/service-provider-registry": "^1.0",
-        "php-di/invoker": "^1.3"
+        "thecodingmachine/service-provider-registry": "^1.0"
     },
     "require-dev": {
         "php": ">=5.6",

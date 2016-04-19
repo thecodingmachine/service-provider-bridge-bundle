@@ -145,16 +145,8 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $factoryDefinition = new Definition('Class'); // TODO: in PHP7, we can get the return type of the function!
         $containerDefinition = new Reference('interop_service_provider_acclimated_container');
 
-        $callableReflection = CallableReflection::create($callable);
-
-        if ($callableReflection instanceof \ReflectionMethod && $callableReflection->isStatic() && $callableReflection->isPublic()) {
-            $factoryDefinition->setFactory([
-                $callableReflection->getDeclaringClass()->getName(),
-                $callableReflection->getName()
-            ]);
-            $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
-        } elseif ($callableReflection instanceof \ReflectionFunction && !$callable instanceof \Closure) {
-            $factoryDefinition->setFactory($callableReflection->getName());
+        if ((is_array($callable) && is_string($callable[0])) || is_string($callable)) {
+            $factoryDefinition->setFactory($callable);
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
         } else {
             $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), 'createService' ]);
