@@ -5,6 +5,7 @@ namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
 
 use Interop\Container\ServiceProvider;
+use Invoker\Reflection\CallableReflection;
 use Puli\Discovery\Binding\ClassBinding;
 use Puli\GeneratedPuliFactory;
 use Symfony\Component\DependencyInjection\Alias;
@@ -144,14 +145,16 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $factoryDefinition = new Definition('Class'); // TODO: in PHP7, we can get the return type of the function!
         $containerDefinition = new Reference('interop_service_provider_acclimated_container');
 
-        if (is_array($callable) && is_string($callable[0])) {
+        $callableReflection = CallableReflection::create($callable);
+
+        if ($callableReflection instanceof \ReflectionMethod && $callableReflection->isStatic() && $callableReflection->isPublic()) {
             $factoryDefinition->setFactory([
-                $callable[0],
-                $callable[1]
+                $callableReflection->getDeclaringClass()->getName(),
+                $callableReflection->getName()
             ]);
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
-        } elseif (is_string($callable) && strpos($callable, '::') !== false) {
-            $factoryDefinition->setFactory($callable);
+        } elseif ($callableReflection instanceof \ReflectionFunction) {
+            $factoryDefinition->setFactory($callableReflection->getName());
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
         } else {
             $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), 'createService' ]);
