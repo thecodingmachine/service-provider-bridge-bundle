@@ -38,8 +38,6 @@ class SymfonyContainerAdapter implements ContainerInterface
             return $this->container->get($id);
         } catch (SymfonyNotFoundException $prev) {
             throw BridgeNotFoundException::fromPrevious($id, $prev);
-        } catch (SymfonyInvalidArgumentException $prev) {
-            throw BridgeNotFoundException::fromPrevious($id, $prev);
         } catch (\Exception $prev) {
             throw BridgeContainerException::fromPrevious($id, $prev);
         }
