@@ -13,6 +13,20 @@ Import `service-provider` as defined in `container-interop` into a Symfony appli
 
 Add `TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle` and `\Puli\SymfonyBundle\PuliBundle` in your kernel (the `app/AppKernel.php` file).
 
+**AppKernel.php**
+```php
+    public function registerBundles()
+    {
+        $bundles = [
+            ...
+            new \Puli\SymfonyBundle\PuliBundle(),
+            new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle()
+        ];
+        ...
+    }
+```
+
+
 ### Usage using Puli
 
 The bridge bundle will use Puli to automatically discover the service providers of your project. If the service provider you are loading publishes itself
@@ -30,10 +44,12 @@ class AppKernel extends Kernel
     {
         $bundles = [
             ...
-            new TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
+            new \Puli\SymfonyBundle\PuliBundle(),
+            new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
                 new MyServiceProvide1(),
                 new MyServiceProvide2()
-            ]);
+            ])
+        ];
         ...
     }
 }
@@ -48,10 +64,12 @@ You can therefore improve performances of your application.
     {
         $bundles = [
             ...
-            new TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
+            new \Puli\SymfonyBundle\PuliBundle(),
+            new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
                 MyServiceProvide1::class,
                 MyServiceProvide2::class
-            ]);
+            ])
+        ];
         ...
     }
 ```
@@ -64,10 +82,12 @@ Finally, if you need to pass parameters to the constructors of the service provi
     {
         $bundles = [
             ...
-            new TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
+            new \Puli\SymfonyBundle\PuliBundle(),
+            new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
                 [ MyServiceProvide1::class, [ "param1", "param2" ] ],
                 [ MyServiceProvide2::class, [ 42 ] ],
-            ]);
+            ])
+        ];
         ...
     }
 ```
@@ -83,9 +103,10 @@ You can disable Puli discovery by passing `false` as the second argument of the 
         $bundles = [
             ...
             // false is passed as second argument. Puli discovery will be disabled.
-            new TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
+            new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
                 ...
-            ], false);
+            ], false)
+        ];
         ...
     }
 ```
