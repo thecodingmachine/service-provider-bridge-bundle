@@ -6,6 +6,7 @@ use Puli\Discovery\Api\Discovery;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\InvalidArgumentException;
 use TheCodingMachine\ServiceProvider\Registry;
 
 class InteropServiceProviderBridgeBundle extends Bundle

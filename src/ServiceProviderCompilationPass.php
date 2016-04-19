@@ -153,7 +153,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
                 $callableReflection->getName()
             ]);
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
-        } elseif ($callableReflection instanceof \ReflectionFunction) {
+        } elseif ($callableReflection instanceof \ReflectionFunction && !$callable instanceof \Closure) {
             $factoryDefinition->setFactory($callableReflection->getName());
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
         } else {

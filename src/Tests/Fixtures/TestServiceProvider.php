@@ -4,6 +4,11 @@ namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures;
 use Interop\Container\ContainerInterface;
 use Interop\Container\ServiceProvider;
 
+function myFunctionFactory()
+{
+    return 42;
+}
+
 class TestServiceProvider implements ServiceProvider
 {
     public function getServices()
@@ -15,7 +20,8 @@ class TestServiceProvider implements ServiceProvider
 
                 return $instance;
             },
-            'serviceB' => [ TestServiceProvider::class, 'createServiceB' ]
+            'serviceB' => [ TestServiceProvider::class, 'createServiceB' ],
+            'function' => 'TheCodingMachine\\Interop\\ServiceProviderBridgeBundle\\Tests\\Fixtures\\myFunctionFactory'
         ];
     }
 
