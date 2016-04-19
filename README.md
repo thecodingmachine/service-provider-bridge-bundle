@@ -1,3 +1,8 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/service-provider-bridge-bundle/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/thecodingmachine/service-provider-bridge-bundle/?branch=1.0)
+[![Build Status](https://travis-ci.org/thecodingmachine/service-provider-bridge-bundle.svg?branch=1.0)](https://travis-ci.org/thecodingmachine/service-provider-bridge-bundle)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/service-provider-bridge-bundle/badge.svg?branch=1.0&service=github)](https://coveralls.io/github/thecodingmachine/service-provider-bridge-bundle?branch=1.0)
+
+
 # container-interop/service-provider bridge bundle
 
 Import `service-provider` as defined in `container-interop` into a Symfony application.
