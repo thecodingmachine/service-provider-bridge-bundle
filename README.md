@@ -110,3 +110,13 @@ You can disable Puli discovery by passing `false` as the second argument of the 
         ...
     }
 ```
+
+## Default aliases
+
+By default, this package provides a `CommonAliasesServiceProvider` that will create the following aliases:
+
+- `logger` => `Psr\Log\LoggerInterface`
+- `cache.app` => `Psr\Cache\CacheItemPoolInterface`
+- `twig` => `Twig_Environment`
+
+This is useful because most service providers expect entries to be available by class/interface name.
