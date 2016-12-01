@@ -20,29 +20,17 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
 {
     private $registryId;
 
-    /**
-     * @var array
-     */
-    private $serviceProvidersLazyArray;
-
-    /**
-     * @var bool
-     */
-    private $usePuli;
-
-    private $bundle;
+    private $registryProvider;
 
     /**
      * @param int $registryId
      * @param array $serviceProvidersLazyArray
      * @param bool $usePuli
      */
-    public function __construct($registryId, array $serviceProvidersLazyArray, $usePuli, InteropServiceProviderBridgeBundle $bundle)
+    public function __construct($registryId, RegistryProviderInterface $registryProvider)
     {
         $this->registryId = $registryId;
-        $this->serviceProvidersLazyArray = $serviceProvidersLazyArray;
-        $this->usePuli = $usePuli;
-        $this->bundle = $bundle;
+        $this->registryProvider = $registryProvider;
     }
 
 
@@ -56,7 +44,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         // Now, let's store the registry in the container (an empty version of it... it will be dynamically added at runtime):
         $this->registerRegistry($container);
 
-        $registry = $this->bundle->getRegistry($container);
+        $registry = $this->registryProvider->getRegistry($container);
 
         // Note: in the 'boot' method of a bundle, the container is available.
         // We use that to push the lazy array in the container.

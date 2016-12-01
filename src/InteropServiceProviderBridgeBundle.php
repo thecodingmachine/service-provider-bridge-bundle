@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\InvalidArgumentException;
 use TheCodingMachine\ServiceProvider\Registry;
 
-class InteropServiceProviderBridgeBundle extends Bundle
+class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProviderInterface
 {
     private $serviceProviders;
     private $usePuli;
@@ -31,7 +31,7 @@ class InteropServiceProviderBridgeBundle extends Bundle
 
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new ServiceProviderCompilationPass($this->id, $this->serviceProviders, $this->usePuli, $this));
+        $container->addCompilerPass(new ServiceProviderCompilationPass($this->id, $this));
     }
 
     /**
