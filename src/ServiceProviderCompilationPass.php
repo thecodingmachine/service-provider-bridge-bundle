@@ -24,8 +24,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
 
     /**
      * @param int $registryId
-     * @param array $serviceProvidersLazyArray
-     * @param bool $usePuli
+     * @param RegistryProviderInterface $registryProvider
      */
     public function __construct($registryId, RegistryProviderInterface $registryProvider)
     {
