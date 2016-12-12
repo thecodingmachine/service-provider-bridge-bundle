@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\InvalidArgumentException;
 use TheCodingMachine\ServiceProvider\Registry;
+use TheCodingMachine\ServiceProvider\RegistryInterface;
 
 class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProviderInterface
 {
@@ -45,7 +46,7 @@ class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProvi
 
     /**
      * @param ContainerInterface $container
-     * @return Registry
+     * @return RegistryInterface
      * @throws InvalidArgumentException
      */
     public function getRegistry(ContainerInterface $container)
