@@ -11,7 +11,7 @@ Import `service-provider` as defined in `container-interop` into a Symfony appli
 
 ### Installation
 
-Add `TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle` and `\Puli\SymfonyBundle\PuliBundle` in your kernel (the `app/AppKernel.php` file).
+Add `TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle` in your kernel (the `app/AppKernel.php` file).
 
 **AppKernel.php**
 ```php
@@ -19,7 +19,6 @@ Add `TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProvider
     {
         $bundles = [
             ...
-            new \Puli\SymfonyBundle\PuliBundle(),
             new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle()
         ];
         ...
@@ -27,14 +26,14 @@ Add `TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProvider
 ```
 
 
-### Usage using Puli
+### Usage using thecodingmachine/discovery
 
-The bridge bundle will use Puli to automatically discover the service providers of your project. If the service provider you are loading publishes itself
-on Puli, then you are done. The services declared in the service provider are available in the Symfony container!
+The bridge bundle will use thecodingmachine/discvoery to automatically discover the service providers of your project. If the service provider you are loading publishes itself
+on Discovery, then you are done. The services declared in the service provider are available in the Symfony container!
 
 ### Usage using manual declaration
  
-If the service provider you are using does not publishes itself using Puli, you will have to declare it manually in the constructor of the bundle.
+If the service provider you are using does not publishes itself using thecodingmachine/discovery, you will have to declare it manually in the constructor of the bundle.
 
 **AppKernel.php**
 ```php
@@ -44,7 +43,6 @@ class AppKernel extends Kernel
     {
         $bundles = [
             ...
-            new \Puli\SymfonyBundle\PuliBundle(),
             new \TheCodingMachine\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle([
                 new MyServiceProvide1(),
                 new MyServiceProvide2()
@@ -92,9 +90,9 @@ Finally, if you need to pass parameters to the constructors of the service provi
     }
 ```
 
-## Disabling Puli discovery
+## Disabling thecodingmachine/discovery
 
-You can disable Puli discovery by passing `false` as the second argument of the bundle:
+You can disable Discovery by passing `false` as the second argument of the bundle:
 
 **AppKernel.php**
 ```php
