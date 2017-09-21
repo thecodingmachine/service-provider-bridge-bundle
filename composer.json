@@ -12,12 +12,11 @@
     "require": {
         "php": ">=5.5.0",
         "symfony/dependency-injection": "^2.3 | ^3.0",
-        "container-interop/service-provider": "~0.3.0",
+        "container-interop/service-provider": "~0.4.0",
         "symfony/framework-bundle": "^2.7 | ^3.0",
-        "puli/cli": "^1.0",
-        "puli/symfony-bundle": "^1.0",
-        "thecodingmachine/service-provider-registry": "^1.0",
-        "thecodingmachine/common-factories": "dev-master"
+        "thecodingmachine/service-provider-registry": "^3.0",
+        "thecodingmachine/common-factories": "dev-master",
+        "thecodingmachine/discovery": "^1.2"
     },
     "require-dev": {
         "php": ">=5.6",

@@ -2,16 +2,16 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\ServiceProvider;
+use Interop\Container\ServiceProviderInterface;
 
 function myFunctionFactory()
 {
     return 42;
 }
 
-class TestServiceProvider implements ServiceProvider
+class TestServiceProvider implements ServiceProviderInterface
 {
-    public function getServices()
+    public function getFactories()
     {
         return [
             'serviceA' => function (ContainerInterface $container) {
@@ -31,5 +31,10 @@ class TestServiceProvider implements ServiceProvider
         // Test getting the database_host parameter.
         $instance->parameter = $container->get('database_host');
         return $instance;
+    }
+
+    public function getExtensions()
+    {
+        return [];
     }
 }

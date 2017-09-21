@@ -4,10 +4,7 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
 
-use Interop\Container\ServiceProvider;
-use Invoker\Reflection\CallableReflection;
-use Puli\Discovery\Binding\ClassBinding;
-use Puli\GeneratedPuliFactory;
+use Interop\Container\ServiceProviderInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,7 +29,6 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $this->registryProvider = $registryProvider;
     }
 
-
     /**
      * You can modify the container here before it is dumped to PHP code.
      *
@@ -53,7 +49,11 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $this->registerAcclimatedContainer($container);
 
         foreach ($registry as $serviceProviderKey => $serviceProvider) {
-            $this->registerProvider($serviceProviderKey, $serviceProvider, $container);
+            $this->registerFactories($serviceProviderKey, $serviceProvider, $container);
+        }
+
+        foreach ($registry as $serviceProviderKey => $serviceProvider) {
+            $this->registerExtensions($serviceProviderKey, $serviceProvider, $container);
         }
     }
 
@@ -73,15 +73,29 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $container->setDefinition('interop_service_provider_acclimated_container', $definition);
     }
 
-    private function registerProvider($serviceProviderKey, ServiceProvider $serviceProvider, ContainerBuilder $container) {
-        $serviceFactories = $serviceProvider->getServices();
+    private function registerFactories($serviceProviderKey, ServiceProviderInterface $serviceProvider, ContainerBuilder $container) {
+        $serviceFactories = $serviceProvider->getFactories();
 
         foreach ($serviceFactories as $serviceName => $callable) {
-            $this->registerService($serviceName, $serviceProviderKey, $serviceProvider, $callable, $container);
+            $this->registerService($serviceName, $serviceProviderKey, $callable, $container);
         }
     }
 
-    private function registerService($serviceName, $serviceProviderKey, ServiceProvider $serviceProvider, $callable, ContainerBuilder $container) {
+    private function registerExtensions($serviceProviderKey, ServiceProviderInterface $serviceProvider, ContainerBuilder $container) {
+        $serviceFactories = $serviceProvider->getExtensions();
+
+        foreach ($serviceFactories as $serviceName => $callable) {
+            $this->extendService($serviceName, $serviceProviderKey, $callable, $container);
+        }
+    }
+
+    private function registerService($serviceName, $serviceProviderKey, $callable, ContainerBuilder $container) {
+        $factoryDefinition = $this->getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, $callable);
+
+        $container->setDefinition($serviceName, $factoryDefinition);
+    }
+
+    private function extendService($serviceName, $serviceProviderKey, $callable, ContainerBuilder $container) {
         $factoryDefinition = $this->getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, $callable);
 
         if (!$container->has($serviceName)) {
@@ -99,21 +113,13 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
             $innerDefinition = $container->findDefinition($oldServiceName);
             $container->setDefinition($innerName, $innerDefinition);
 
-            $callbackWrapperName = $serviceName.'.callbackwrapper';
-            $callbackWrapperDefinition = new Definition('TheCodingMachine\\Interop\\ServiceProviderBridgeBundle\\CallableService', [
-                new Reference('service_container'),
-                $innerName
-            ]);
-
-            $factoryDefinition->addArgument(new Reference($callbackWrapperName));
+            $factoryDefinition->addArgument(new Reference($innerName));
 
             $container->setDefinition($serviceName, $factoryDefinition);
             $container->setDefinition($innerName, $innerDefinition);
-            $container->setDefinition($callbackWrapperName, $callbackWrapperDefinition);
 
             $container->setAlias($oldServiceName, new Alias($serviceName));
         }
-
     }
 
     private function getDecoratedServiceName($serviceName, ContainerBuilder $container) {

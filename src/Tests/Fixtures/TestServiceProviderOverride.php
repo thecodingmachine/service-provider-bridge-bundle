@@ -2,22 +2,25 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\ServiceProvider;
+use Interop\Container\ServiceProviderInterface;
 
-class TestServiceProviderOverride implements ServiceProvider
+class TestServiceProviderOverride implements ServiceProviderInterface
 {
-    public function getServices()
+    public function getFactories()
+    {
+        return [];
+    }
+
+    public static function overrideServiceA(ContainerInterface $container, \stdClass $serviceA = null)
+    {
+        $serviceA->newProperty = 'foo';
+        return $serviceA;
+    }
+
+    public function getExtensions()
     {
         return [
             'serviceA' => [ TestServiceProviderOverride::class, 'overrideServiceA' ]
         ];
     }
-
-    public static function overrideServiceA(ContainerInterface $container, callable $previousCallback = null)
-    {
-        $serviceA = $previousCallback();
-        $serviceA->newProperty = 'foo';
-        return $serviceA;
-    }
-
 }

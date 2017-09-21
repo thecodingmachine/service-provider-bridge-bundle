@@ -2,7 +2,6 @@
 
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
-use Puli\Discovery\Api\Discovery;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -13,19 +12,19 @@ use TheCodingMachine\ServiceProvider\RegistryInterface;
 class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProviderInterface
 {
     private $serviceProviders;
-    private $usePuli;
+    private $useDiscovery;
     private $id;
 
     private static $count = 0;
 
     /**
      * @param array $serviceProviders An array of service providers, in the format specified in thecodingmachine/service-provider-registry: https://github.com/thecodingmachine/service-provider-registry#how-does-it-work
-     * @param bool $usePuli
+     * @param bool $useDiscovery
      */
-    public function __construct(array $serviceProviders = [], $usePuli = true)
+    public function __construct(array $serviceProviders = [], $useDiscovery = true)
     {
         $this->serviceProviders = $serviceProviders;
-        $this->usePuli = $usePuli;
+        $this->useDiscovery = $useDiscovery;
         $this->id = self::$count;
         self::$count++;
     }
@@ -52,26 +51,12 @@ class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProvi
     public function getRegistry(ContainerInterface $container)
     {
         $discovery = null;
-        if ($this->usePuli) {
-            $discovery = $this->getPuliDiscovery($container);
+        if ($this->useDiscovery) {
+            $discovery = \TheCodingMachine\Discovery\Discovery::getInstance();
         }
 
         // In parallel, let's merge the registry:
         $registry = new Registry($this->serviceProviders, $discovery);
         return $registry;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @return Discovery
-     * @throws InvalidArgumentException
-     */
-    protected function getPuliDiscovery(ContainerInterface $container)
-    {
-        if (!$container->has('puli.discovery')) {
-            throw new InvalidArgumentException('Could not find puli.discovery in container. Make sure you add the Puli bundle to your AppKernel.php file. Alternatively, you can disable Puli detection by passing false as the second argument to the InteropServiceProviderBridgeBundle.');
-        }
-
-        return $container->get('puli.discovery');
     }
 }
