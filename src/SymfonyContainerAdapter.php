@@ -6,7 +6,6 @@ use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\ContainerExce
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\NotFoundException as BridgeNotFoundException;
 use Interop\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException as SymfonyInvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException as SymfonyNotFoundException;
 
 /**

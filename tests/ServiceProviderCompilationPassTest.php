@@ -4,8 +4,10 @@
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use TheCodingMachine\Discovery\DiscoveryInterface;
+use Symfony\Component\DependencyInjection\Definition;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures\TestServiceProvider;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures\TestServiceProviderOverride;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures\TestServiceProviderOverride2;
@@ -18,6 +20,7 @@ class ServiceProviderCompilationPassTest extends \PHPUnit_Framework_TestCase
 
         $container = new ContainerBuilder();
         $container->setParameter('database_host', 'localhost');
+        $container->setDefinition('logger', new Definition(NullLogger::class));
 
         $bundle->build($container);
         $container->compile();
@@ -25,15 +28,6 @@ class ServiceProviderCompilationPassTest extends \PHPUnit_Framework_TestCase
         $bundle->boot();
         return $container;
     }
-
-    /*protected function getDiscovery()
-    {
-        $discovery = new InMemoryDiscovery();
-        $discovery->addBindingType(new BindingType('container-interop/service-provider'));
-        $classBinding = new ClassBinding(TestServiceProvider::class, 'container-interop/service-provider');
-        $discovery->addBinding($classBinding);
-        return $discovery;
-    }*/
 
     public function testSimpleServiceProvider()
     {
@@ -76,12 +70,13 @@ class ServiceProviderCompilationPassTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    /*public function testPuliBundle()
+    public function testTcmDiscovery()
     {
+        // If TCM discovery is enabled, the CommonAliasesServiceProvider is registered.
         $container = $this->getContainer([], true);
 
-        $serviceA = $container->get('serviceA');
+        $logger = $container->get(LoggerInterface::class);
 
-        $this->assertInstanceOf(\stdClass::class, $serviceA);
-    }*/
+        $this->assertInstanceOf(LoggerInterface::class, $logger);
+    }
 }
