@@ -15,7 +15,7 @@
         "container-interop/service-provider": "~0.4.0",
         "symfony/framework-bundle": "^2.7 | ^3.0",
         "thecodingmachine/service-provider-registry": "^3.0",
-        "thecodingmachine/common-factories": "^0.3",
+        "thecodingmachine/common-factories": "^0.4",
         "thecodingmachine/discovery": "^1.2"
     },
     "require-dev": {
