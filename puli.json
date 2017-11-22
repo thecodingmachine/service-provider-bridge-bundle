@@ -114,8 +114,16 @@
             "install-path": "vendor/psr/cache",
             "installer": "composer"
         },
+        "psr/container": {
+            "install-path": "vendor/psr/container",
+            "installer": "composer"
+        },
         "psr/log": {
             "install-path": "vendor/psr/log",
+            "installer": "composer"
+        },
+        "psr/simple-cache": {
+            "install-path": "vendor/psr/simple-cache",
             "installer": "composer"
         },
         "puli/cli": {
@@ -259,6 +267,10 @@
         },
         "symfony/http-kernel": {
             "install-path": "vendor/symfony/http-kernel",
+            "installer": "composer"
+        },
+        "symfony/polyfill-apcu": {
+            "install-path": "vendor/symfony/polyfill-apcu",
             "installer": "composer"
         },
         "symfony/polyfill-mbstring": {

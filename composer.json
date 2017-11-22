@@ -17,7 +17,7 @@
         "puli/cli": "^1.0",
         "puli/symfony-bundle": "^1.0",
         "thecodingmachine/service-provider-registry": "^1.0",
-        "thecodingmachine/common-factories": "dev-master"
+        "thecodingmachine/common-factories": "^0.3.1"
     },
     "require-dev": {
         "php": ">=5.6",
