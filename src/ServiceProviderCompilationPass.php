@@ -45,8 +45,6 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         // The lazy array can be used by the registry that is also part of the container.
         // The registry can itself be used by a factory that creates services!
 
-        $this->registerAcclimatedContainer($container);
-
         foreach ($registry as $serviceProviderKey => $serviceProvider) {
             $this->registerFactories($serviceProviderKey, $serviceProvider, $container);
         }
@@ -63,13 +61,6 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $definition->setSynthetic(true);
 
         $container->setDefinition('service_provider_registry_'.$this->registryId, $definition);
-    }
-
-    private function registerAcclimatedContainer(ContainerBuilder $container) {
-        $definition = new Definition('TheCodingMachine\\Interop\\ServiceProviderBridgeBundle\\SymfonyContainerAdapter');
-        $definition->addArgument(new Reference("service_container"));
-
-        $container->setDefinition('interop_service_provider_acclimated_container', $definition);
     }
 
     private function registerFactories($serviceProviderKey, ServiceProviderInterface $serviceProvider, ContainerBuilder $container) {
