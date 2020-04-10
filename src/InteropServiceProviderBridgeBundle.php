@@ -25,6 +25,8 @@ class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProvi
         $this->serviceProviders = $serviceProviders;
         $this->useDiscovery = $useDiscovery;
         $this->id = self::$count;
+        $this->name = $this->getName() . $this->id;
+
         self::$count++;
     }
 
@@ -40,6 +42,16 @@ class InteropServiceProviderBridgeBundle extends Bundle implements RegistryProvi
     {
         $registryServiceName = 'service_provider_registry_'.$this->id;
         $this->container->set($registryServiceName, $this->getRegistry($this->container));
+    }
+
+    /**
+     * When the Kernel shuts down, this bundle's static identifier must be
+     * reset, otherwise it may lead to incorrect identifier binding for the
+     * compiled container.
+     */
+    public function shutdown()
+    {
+        self::$count = 0;
     }
 
     /**
