@@ -1,15 +1,15 @@
 language: php
 
 php:
- - 7.1
+ - 7.2
+ - 7.4
 
 before_script:
- - wget http://getcomposer.org/composer.phar
- - php composer.phar install --no-interaction
+ - composer install --no-interaction
 
 script:
  - mkdir -p build/logs
  - phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
- - php vendor/bin/coveralls -v
+ - php vendor/bin/php-coveralls -v
