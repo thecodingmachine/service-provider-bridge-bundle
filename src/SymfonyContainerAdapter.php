@@ -2,11 +2,8 @@
 
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle;
 
-use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\ContainerException as BridgeContainerException;
-use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\NotFoundException as BridgeNotFoundException;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException as SymfonyNotFoundException;
 
 /**
  * An adapter from a Symfony Container to the standardized ContainerInterface
@@ -33,13 +30,8 @@ class SymfonyContainerAdapter implements ContainerInterface
         if ($this->container->hasParameter($id)) {
             return $this->container->getParameter($id);
         }
-        try {
-            return $this->container->get($id);
-        } catch (SymfonyNotFoundException $prev) {
-            throw BridgeNotFoundException::fromPrevious($id, $prev);
-        } catch (\Exception $prev) {
-            throw BridgeContainerException::fromPrevious($id, $prev);
-        }
+
+        return $this->container->get($id);
     }
 
     public function has($id)
