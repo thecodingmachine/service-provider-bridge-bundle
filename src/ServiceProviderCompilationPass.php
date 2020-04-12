@@ -95,7 +95,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
     }
 
     private function extendService($serviceName, $serviceProviderKey, $callable, ContainerBuilder $container) {
-        $factoryDefinition = $this->getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, $callable);
+        $factoryDefinition = $this->getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, $callable, true);
 
         if (!$container->has($serviceName)) {
             $container->setDefinition($serviceName, $factoryDefinition);
@@ -129,7 +129,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         return $serviceName.'_decorated_'.$counter;
     }
 
-    private function getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, callable $callable)
+    private function getServiceDefinitionFromCallable($serviceName, $serviceProviderKey, callable $callable, $isExtension = false)
     {
         /*if ($callable instanceof DefinitionInterface) {
             // TODO: plug the definition-interop converter here!
@@ -141,7 +141,8 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
             $factoryDefinition->setFactory($callable);
             $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
         } else {
-            $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), 'createService' ]);
+            $method = $isExtension ? 'extendService' : 'createService';
+            $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), $method ]);
             $factoryDefinition->addArgument($serviceProviderKey);
             $factoryDefinition->addArgument($serviceName);
             $factoryDefinition->addArgument($containerDefinition);

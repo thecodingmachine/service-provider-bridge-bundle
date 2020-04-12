@@ -35,6 +35,10 @@ class TestServiceProvider implements ServiceProviderInterface
 
     public function getExtensions()
     {
-        return [];
+        return [
+            'stringValue' => function (ContainerInterface $container, $value) {
+                return $value . '1';
+            },
+        ];
     }
 }
