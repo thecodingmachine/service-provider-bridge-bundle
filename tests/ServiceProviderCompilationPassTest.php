@@ -56,6 +56,18 @@ class ServiceProviderCompilationPassTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $serviceA->newProperty2);
     }
 
+    public function testExtensionsAreCalledInCorrectOrder()
+    {
+        $container = $this->getContainer([
+            new TestServiceProvider(),
+            new TestServiceProviderOverride(),
+        ]);
+
+        $value = $container->get('stringValue');
+
+        $this->assertSame('foo12', $value);
+    }
+
     /**
      * @expectedException \TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\InvalidArgumentException
      */
