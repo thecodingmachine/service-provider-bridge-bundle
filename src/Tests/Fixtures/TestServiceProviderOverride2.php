@@ -2,8 +2,8 @@
 
 namespace TheCodingMachine\Interop\ServiceProviderBridgeBundle\Tests\Fixtures;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 
 class TestServiceProviderOverride2 implements ServiceProviderInterface
 {

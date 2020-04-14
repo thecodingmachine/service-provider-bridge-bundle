@@ -117,7 +117,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
             $container->setDefinition($serviceName, $factoryDefinition);
             $container->setDefinition($innerName, $innerDefinition);
 
-            $container->setAlias($oldServiceName, new Alias($serviceName));
+            $container->setAlias($oldServiceName, (new Alias($serviceName))->setPublic(true));
         }
     }
 
@@ -135,11 +135,12 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
             // TODO: plug the definition-interop converter here!
         }*/
         $factoryDefinition = new Definition('Class'); // TODO: in PHP7, we can get the return type of the function!
+        $factoryDefinition->setPublic(true);
         $containerDefinition = new Reference('interop_service_provider_acclimated_container');
 
         if ((is_array($callable) && is_string($callable[0])) || is_string($callable)) {
             $factoryDefinition->setFactory($callable);
-            $factoryDefinition->addArgument(new Reference('interop_service_provider_acclimated_container'));
+            $factoryDefinition->addArgument($containerDefinition);
         } else {
             $method = $isExtension ? 'extendService' : 'createService';
             $factoryDefinition->setFactory([ new Reference('service_provider_registry_'.$this->registryId), $method ]);
